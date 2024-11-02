@@ -1,0 +1,26 @@
+
+.bg-2{
+    background-color: #35BAF2;
+    color: white;
+}
+
+.bg-base{
+    background-color: #1F2641;
+    color: white;
+
+}
+.color-base{
+    color: #1F2641;
+
+}
+.color-secondary{
+    color: #35BAF2;
+}
+.bold{
+    font-weight: 600;
+}
+.question{
+    font-size: 20px;
+    font-weight: 600;
+    
+}

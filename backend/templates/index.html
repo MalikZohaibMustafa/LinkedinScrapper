@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinkedIn Scraper</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-top: 20px;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .form-container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+
+        label {
+            font-size: 16px;
+            color: #555;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        input[type="submit"] {
+            width: 100%;
+            padding: 12px;
+            background-color: #0073b1;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #005582;
+        }
+
+        .info-text {
+            text-align: center;
+            font-size: 14px;
+            color: #777;
+        }
+
+        footer {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px;
+            background-color: #333;
+            color: white;
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                margin: 20px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <h1>LinkedIn Scraper</h1>
+
+    <div class="container">
+        <div class="form-container">
+            <form action="/scrape" method="POST">
+                <label for="url">LinkedIn Profile URL:</label><br>
+                <input type="text" id="url" name="url" placeholder="Enter LinkedIn profile URL" required><br><br>
+                <label for="proxy">Proxy (optional):</label><br>
+                <input type="text" id="proxy" name="proxy" placeholder="Enter proxy server (optional)"><br><br>
+                <input type="submit" value="Scrape Profile">
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 LinkedIn Scraper</p>
+    </footer>
+
+</body>
+</html>

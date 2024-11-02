@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}
+  Questions
+{% endblock title %}    
+
+{% block body %}
+
+<style>
+  .question{
+    font-size: 1.2rem;
+      }
+</style>
+  <div class="container min-vh-100 d-flex my-5 ">
+  
+            <div class="col-12 d-flex justify-content-center align-items-center ">
+ 
+              <form action="{% url 'getRecommendation' %}" method="post">
+
+                <h3 class="mb-4">
+                  Answer the following Questions to generate optimized content for your profile
+                </h3>
+                <input type="hidden" name="about" value="{{about}}"  id="">
+                <input type="hidden" name="numOfAboutQuestions" value="{{numOfAboutQuestions}}"  id="">
+                <input type="hidden" name="numOfHeadlineQuestions" value="{{numOfHeadlineQuestions}}"  id="">
+                <input type="hidden" name="headline" value="{{headline}}"  id="">
+                {% csrf_token %}
+                {% for question in questions_headline  %}
+
+                <div class="mb-3">
+    
+    
+                  <div>
+                    <input type="hidden" name="question_headline_{{forloop.counter}}" value="{{question}}">
+                    
+                    <p class="question"> 
+                      {{question}}
+                    </p>  
+                  </div>
+                  <textarea class="form-control" name="answer_headline_{{forloop.counter}}" rows="3" id="answer_{{forloop.counter}}"></textarea>
+                </div>
+                {% endfor %}
+                {% for question in questions_about  %}
+
+                <div class="mb-3">
+    
+    
+                  <div>
+                    <input type="hidden" name="question_about_{{forloop.counter}}" value="{{question}}">
+                    
+                    <p class="question"> 
+                      {{question}}
+                    </p>  
+                  </div>
+                  <textarea class="form-control" name="answer_about_{{forloop.counter}}" rows="3" id="answer_{{forloop.counter}}"></textarea>
+                </div>
+                {% endfor %}
+                    <button type="submit" class="btn btn-primary">Update</button>
+                  </form>
+            </div>
+</div>
+
+{% endblock body %}

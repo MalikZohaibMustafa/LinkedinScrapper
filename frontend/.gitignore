@@ -1,0 +1,10 @@
+__pycache__
+db.sqlite3
+env
+.vercel
+package-lock.json
+node_modules
+package.json
+env_wsl
+venv
+.env

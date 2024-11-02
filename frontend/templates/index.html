@@ -1,0 +1,357 @@
+{% extends 'base.html' %}
+{% block title %}
+  Home
+{% endblock title %}    
+
+{% block body %}
+<style>
+  .loader {
+    width: 2.5em;
+    height: 2.5em;
+    transform: rotate(165deg);
+  }
+  .loader:before, .loader:after {
+    content: "";
+    position: absolute;
+    top: 30%;
+    left: 50%;
+    display: block;
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 0.25em;
+    transform: translate(-50%, -50%);
+  }
+  .loader:before {
+    animation: before 2s infinite;
+  }
+  .loader:after {
+    animation: after 2s infinite;
+  }
+
+  @keyframes before {
+    0% {
+      width: 0.5em;
+      box-shadow: 1em -0.5em rgba(225, 20, 98, 0.75), -1em 0.5em rgba(111, 202, 220, 0.75);
+    }
+    35% {
+      width: 2.5em;
+      box-shadow: 0 -0.5em rgba(225, 20, 98, 0.75), 0 0.5em rgba(111, 202, 220, 0.75);
+    }
+    70% {
+      width: 0.5em;
+      box-shadow: -1em -0.5em rgba(225, 20, 98, 0.75), 1em 0.5em rgba(111, 202, 220, 0.75);
+    }
+    100% {
+      box-shadow: 1em -0.5em rgba(225, 20, 98, 0.75), -1em 0.5em rgba(111, 202, 220, 0.75);
+    }
+  }
+
+  @keyframes after {
+    0% {
+      height: 0.5em;
+      box-shadow: 0.5em 1em rgba(61, 184, 143, 0.75), -0.5em -1em rgba(233, 169, 32, 0.75);
+    }
+    35% {
+      height: 2.5em;
+      box-shadow: 0.5em 0 rgba(61, 184, 143, 0.75), -0.5em 0 rgba(233, 169, 32, 0.75);
+    }
+    70% {
+      height: 0.5em;
+      box-shadow: 0.5em -1em rgba(61, 184, 143, 0.75), -0.5em 1em rgba(233, 169, 32, 0.75);
+    }
+    100% {
+      box-shadow: 0.5em 1em rgba(61, 184, 143, 0.75), -0.5em -1em rgba(233, 169, 32, 0.75);
+    }
+  }
+
+  /* Ensure the progress bar container and bar have a fixed width */
+  .progress {
+    max-width: 600px; /* Set a max-width to prevent overflow */
+    margin: 0 auto; /* Center it */
+    position: relative;
+    height: 1.5rem;
+    width: 600px;
+    min-width: 600px;
+  }
+
+  .progress-bar {
+    height: 100%;
+    width: 0%; /* Start with 0 width */
+    background-color: #17a2b8; /* Bootstrap info color */
+    transition: width 1s ease;
+  }
+
+  #progressPercentage {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-weight: bold;
+    color: black;
+  }
+
+  .countdown {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 1.5rem;
+  }
+
+  #navigateButton {
+    margin-top: 15px;
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Additional fixed height for the text container to prevent layout shift */
+  #profileTips {
+    height: 60px; /* Adjust height based on the expected text height */
+    transition: all 0.75s ease-in-out;
+  }
+
+  /* Ensure the layout remains centered and fixed */
+  .d-flex .justify-content-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  /* Fix the layout height */
+  html,
+  body {
+    height: 100%;
+  }
+
+  .disabled-btn {
+    opacity: 0.5;
+    pointer-events: none;
+  }
+
+</style>
+
+
+<div class="container h-75 d-flex">
+  <div class="col-12 d-flex justify-content-center align-items-center" id="formDiv">
+    <form action="{% url 'scrape' %}" method="post">
+      {% csrf_token %}
+      <div class="mb-3">
+        <h3>Try for free</h3>
+      </div>
+      <div class="mb-3" style="width: 50vw;">
+        <label for="url" class="form-label">Enter your Linkedin URL (include https)</label>
+        <input type="text" name="url" class="form-control" id="url">
+      </div>
+      <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+  </div>
+
+  <!-- Progress bar and countdown section -->
+  <div id="spinner" class="col-12 d-flex justify-content-center align-items-center d-none">
+    <div>
+      <div class="loader"></div>
+      <h4 class="py-3" id="profileTips">Scraping Your Profile</h4>
+      
+      <div class="progress">
+        <div class="progress-bar bg-info" role="progressbar" style="width: 0%" id="progressBar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <span id="progressPercentage">0%</span> <!-- Percentage span inside progress bar -->
+        </div>
+      </div>
+      <div class="countdown" id="countdown">50 seconds remaining</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const profileTips = document.getElementById('profileTips');
+  const form = document.querySelector('form');
+  const countdownElement = document.getElementById('countdown');
+  const progressBar = document.getElementById('progressBar');
+  const progressPercentage = document.getElementById('progressPercentage');
+  const spinner = document.querySelector('#spinner');
+  let countdown = 80;  // Updated countdown to 80 seconds
+  let interval;  // Declare interval globally to clear it later
+  let pollingInterval;
+  let tryAgainButton, manualButton;
+  
+  form.addEventListener('submit', async (e) => {
+      e.preventDefault();  // Prevent default form submission
+      startScrapingProcess(new FormData(form));  // Initiate the scraping process
+  });
+  
+  function startScrapingProcess(formData) {
+      resetProgressBarAndTimer();  // Reset progress bar and timer
+      hideFormAndShowSpinner();  // Hide the form and show spinner
+      setInterval(changeText, 5000);  // Change tips every 5 seconds
+      startProgressBarAndTimer();  // Start the progress bar and timer
+  
+      // Send the form data via AJAX
+      submitForm(formData);
+  }
+  
+  
+  function submitForm(formData) {
+      fetch(form.action, {
+          method: 'POST',
+          body: formData,
+          headers: {
+              'X-Requested-With': 'XMLHttpRequest',  // Indicate it's an AJAX request
+          }
+      })
+      .then(response => {
+          if (!response.ok) {
+              throw new Error(`HTTP error: ${response.status}`);
+          }
+          return response.json().catch(err => {
+              throw new Error('Invalid JSON response from the server.');
+          });
+      })
+      .then(result => {
+          if (result.status === 'success') {
+              finishScraping(result.data);  
+          } else {
+              handleError(result.message || 'Scraping failed. Please try again.');
+          }
+      })
+      .catch(error => {
+          console.error('Error during scraping:', error);
+          handleError(`Error: ${error.message || 'An error occurred during scraping. Server may be unresponsive.'}`);
+      });
+  }
+  
+  
+  function resetProgressBarAndTimer() {
+      countdown = 80;  // Reset countdown to 80 seconds
+      progressBar.style.width = '0%';
+      progressPercentage.innerText = '0%';
+      clearInterval(interval);
+  }
+  function startProgressBarAndTimer() {
+    // Add styles to the countdown element
+    countdownElement.style.height = '120px';            // Set the fixed height
+    countdownElement.style.maxHeight = '120px';         // Set the max height
+    countdownElement.style.overflow = 'hidden';         // Hide overflow content
+    countdownElement.style.textOverflow = 'ellipsis';   // Add ellipsis for overflow
+    countdownElement.style.whiteSpace = 'nowrap';       // Prevent wrapping
+    countdownElement.style.wordWrap = 'break-word';     // Break long words if necessary
+    countdownElement.style.padding = '10px';            // Add padding
+    countdownElement.style.backgroundColor = '#f9f9f9'; // Add background color
+    countdownElement.style.border = '1px solid #ddd';   // Add border
+    countdownElement.style.borderRadius = '5px';        // Add border radius
+    countdownElement.style.fontSize = '12px';           // Set the font size
+
+    interval = setInterval(() => {
+        if (countdown > 0) {
+            countdown -= 1;
+            countdownElement.innerText = `${countdown} seconds remaining`;
+            const progressValue = ((80 - countdown) / 80) * 100;  // Updated to reflect 80-second countdown
+            progressBar.style.width = `${progressValue}%`;
+            progressPercentage.innerText = `${Math.round(progressValue)}%`;  // Update percentage text
+        } else {
+            clearInterval(interval);
+            countdownElement.innerText = 'Scraping complete! Please wait while we analyze your data.';
+            progressBar.style.width = '100%';
+            progressPercentage.innerText = '100%';  // Ensure 100% is displayed
+        }
+    }, 1000);
+}
+
+  function hideFormAndShowSpinner() {
+      const formDiv = document.querySelector('#formDiv');
+      formDiv.classList.add('d-none');    
+      spinner.classList.remove('d-none');
+  }
+  
+  function finishScraping(data) {
+      clearInterval(interval);
+      countdownElement.innerText = 'Scraping complete! Lets proceed with recommendations';
+      progressBar.style.width = '100%';
+      progressPercentage.innerText = '100%';
+  
+      createNavigateButton();
+      resetErrorButtons();
+  }
+  
+  function handleError(errorMessage) {
+      clearInterval(interval);
+      countdownElement.innerText = errorMessage || 'An error occurred during scraping.';
+      reEnableTryAgainButton();
+      createErrorButtons();
+  }
+  
+  async function changeText() {
+      profileTips.style.opacity = 0;
+      const messages = [
+          "Use a professional headshot for a great first impression!",
+          "Write a compelling headline to stand out!",
+          "Craft an engaging summary that tells your story.",
+          "List relevant skills to showcase your expertise.",
+          "Showcase your achievements and milestones.",
+          "Add rich media to make your profile pop!",
+          "Request recommendations for credibility.",
+          "Join industry groups to expand your network.",
+          "Customize your LinkedIn URL for a clean look.",
+          "Stay active and engage with your connections!"
+      ];
+  
+      let msg = messages[Math.floor(Math.random() * messages.length)];
+      await sleep(750);
+      profileTips.innerHTML = msg;
+      await sleep(750);
+      profileTips.style.opacity = 1;
+  }
+  
+  function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+  }
+  
+  function createNavigateButton() {
+      if (!document.querySelector('#navigateButton')) {
+          const navigateButton = document.createElement('button');
+          navigateButton.innerText = 'Get Recommendations';
+          navigateButton.classList.add('btn', 'btn-success', 'mt-3', 'w-100');
+          navigateButton.id = 'navigateButton';
+          navigateButton.onclick = function() {
+              navigateButton.classList.add('disabled-btn');
+              window.location.href = "{% url 'getRecommendation' %}";
+          };
+          spinner.querySelector('div').appendChild(navigateButton);
+      }
+  }
+  
+  function createErrorButtons() {
+      if (!document.querySelector('#tryAgainButton') && !document.querySelector('#manualButton')) {
+          tryAgainButton = document.createElement('button');
+          tryAgainButton.innerText = 'Try Again';
+          tryAgainButton.classList.add('btn', 'btn-warning', 'mt-3', 'w-100');
+          tryAgainButton.id = 'tryAgainButton';
+          tryAgainButton.onclick = function() {
+              tryAgainButton.classList.add('disabled-btn');
+              startScrapingProcess(new FormData(form));
+          };
+  
+          manualButton = document.createElement('button');
+          manualButton.innerText = 'Enter Manually';
+          manualButton.classList.add('btn', 'btn-secondary', 'mt-3', 'w-100');
+          manualButton.id = 'manualButton';
+          manualButton.onclick = function() {
+              window.location.href = "{% url 'manualUpload' %}";
+          };
+  
+          spinner.querySelector('div').appendChild(tryAgainButton);
+          spinner.querySelector('div').appendChild(manualButton);
+      }
+  }
+  
+  function resetErrorButtons() {
+      if (tryAgainButton) tryAgainButton.remove();
+      if (manualButton) manualButton.remove();
+  }
+
+  function reEnableTryAgainButton() {
+    if (tryAgainButton) {
+        tryAgainButton.classList.remove('disabled-btn');  // Re-enable the "Try Again" button
+    }
+}
+  </script>
+  
+{% endblock body %}
+
+   

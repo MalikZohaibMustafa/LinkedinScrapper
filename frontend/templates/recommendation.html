@@ -1,0 +1,213 @@
+
+
+
+{% extends 'base.html' %}
+{% block title %}
+  Home
+{% endblock title %}    
+
+
+{% block body %}
+
+<style>
+  .form-control:disabled{
+    border: 1px solid black;
+  }
+</style>
+
+<div class="container min-vh-100 d-flex">
+  <div class="col-12 d-flex justify-content-center align-items-center">
+    <form action="" class="my-5" style="width: 100%;" method="post">
+      {% csrf_token %}
+
+      <div class="container">
+        <div class="row">
+
+          
+          <div class="mb-5 py-5 col-6">
+            <h2 for="about" class="form-label text-center">Current Headline:</h2>
+            <div class="form-control" name="CurrentHeadline" id="CurrentHeadline" disabled style="height: auto; white-space: pre-wrap; border: 1px solid #ced4da; background-color: #e9ecef;">{{ headline|safe }}</div>
+          </div>
+  
+          <div class="mb-5 py-5 col-6">
+            <h2 for="about" class="form-label text-center">Recommended Headline:</h2>
+            <div class="form-control" name="RecommendedHeadline" id="recommended-headline" disabled style="height: auto; white-space: pre-wrap; border: 1px solid #ced4da; background-color: #e9ecef;">{{ newHeadline|safe }}</div>
+            <div class="my-2 d-flex justify-content-around">
+              <button  type='button' class="btn btn-primary regen-btn"" data-value='headline' Headline">Regenerate</button>
+              <button  type='button' class="btn btn-primary copy-btn" data-value='headline' id="copyHeadline">Copy</button>
+            </div>
+          </div>
+
+
+
+
+
+
+          <div class="mb-5 py-5 col-6">
+            <h2 for="about" class="form-label text-center">Current About:</h2>
+            <div class="form-control" name="about" id="about" disabled style="height: auto; white-space: pre-wrap; border: 1px solid #ced4da; background-color: #e9ecef;">{{ about|safe }}</div>
+          </div>
+          
+          <div class="mb-5 py-5 col-6">
+            <h2 for="about" class="form-label text-center">Recommended About:</h2>
+            <div class="form-control" name="RecommendedAbout" id="recommended-about" disabled style="height: auto; white-space: pre-wrap; border: 1px solid #ced4da; background-color: #e9ecef;">{{ newAbout|safe }}</div>
+            <div class="my-2 d-flex justify-content-around">
+              <button  type='button' class="btn btn-primary regen-btn"" data-value='about' About">Regenerate</button>
+              <button  type='button' class="btn btn-primary copy-btn" data-value='about' id="copyAbout">Copy</button>
+            </div>
+          </div>
+
+
+
+          <!-- <div class="mb-5 py-5 col-12">
+            <h2 for="about" class="form-label text-center">Recommendedations Regariding Skills Section:</h2>
+            <div class="form-control" name="skillsRecomendation" id="skillsRecomendation" disabled style="height: auto; white-space: pre-wrap; border: 1px solid #ced4da; background-color: #e9ecef;">
+              The Skills section is crucial for LinkedIn's algorithm. It's how employers find suitable candidates. Avoid listing too many skills (max 50), focus on relevant ones, and arrange them by importance. For career changers, highlight transferable skills.  Include both hard and soft skills. Get endorsements to boost credibility. Ask connections for endorsements using a personalized message, highlighting shared experiences.
+            </div>
+          </div> -->
+
+
+
+          <div class="mb-5 py-5 col-6">
+            <h2 for="about" class="form-label text-center">Current Experience Section:</h2>
+            <div class="form-control" name="CurrentExperience" id="CurrentExperience" disabled style="height: auto; white-space: pre-wrap; border: 1px solid #ced4da; background-color: #e9ecef;">{{ experience|safe }}</div>
+
+          </div>
+  
+          <div class="mb-5 py-5 col-6">
+            <h2 for="about" class="form-label text-center">Recommended Experience:</h2>
+            <div class="form-control" name="RecommendedExperience" id="recommended-experience" disabled style="height: auto; white-space: pre-wrap; border: 1px solid #ced4da; background-color: #e9ecef;">{{ newExperience|safe }}</div>
+            <div class="my-2 d-flex justify-content-around">
+              <button  type='button' class="btn btn-primary regen-btn"" data-value='experience' Exp">Regenerate</button>
+              <button  type='button' class="btn btn-primary copy-btn" data-value='experience' id="copyExp">Copy</button>
+            </div>
+          </div>
+
+
+
+          <div class="mb-5 py-5 col-6" ">
+            <h2 for="CurrentProjects" class="form-label text-center">Current Projects:</h2>
+            <div class="form-control" name="CurrentProjects" id="CurrentProjects" disabled style="height: auto; white-space: pre-wrap; border: 1px solid #ced4da; background-color: #e9ecef;">{{ projects|safe }}</div>
+
+          </div>
+  
+          <div class="mb-5 py-5 col-6">
+            <h2 for="RecommendedProjects" class="form-label text-center">Recommended Projects:</h2>
+            <div class="form-control" name="RecommendedProjects" id="recommended-projects" disabled style="height: auto; white-space: pre-wrap; border: 1px solid #ced4da; background-color: #e9ecef;">
+              {{ newProjects|safe }}
+            </div>
+            <div class="my-2 d-flex justify-content-around">
+              <button  type='button' class="btn btn-primary regen-btn" data-value='projects'>Regenerate</button>
+              <button  type='button' class="btn btn-primary copy-btn" data-value="projects" id= "copyProj">Copy</button>
+            </div>
+          </div>
+
+          <div class="mb-5 py-5 col-12">
+            <h2 for="RecommendedationsRegardingEducation" class="form-label text-center">Recommendedations Regarding  Education:</h2>
+            <div class="form-control" name="RecommendedationsRegardingEducation" id="RecommendedationsRegardingEducation" disabled style="height: auto; white-space: pre-wrap; border: 1px solid #ced4da; background-color: #e9ecef;">
+              Leverage your education section to tell your professional story. Showcase your education strategically, prioritizing the most recent and relevant degrees. Include details like major, coursework, projects, and honors. Use the description to highlight skills and knowledge gained.
+              List all relevant qualifications, even if some are not directly related to your current career goals. Always list your highest qualification as it showcases your academic level. Strategically include keywords in descriptions to enhance your profile's searchability. 
+              
+              Highlight skills and knowledge acquired during your studies that are relevant to your desired career path. Include all higher education experiences, even if they aren't directly related, but omit high school details. For older degrees consider omitting the year of graduation: This can help prevent unconscious age bias.
+            </div>
+          </div>
+
+
+          <div class="mb-5 py-5 col-12" ">
+            <h2 for="about" class="form-label text-center">Recommendations Regarding Volunteer Section:</h2>
+            <div class="form-control" name="about" id="about" disabled style="height: auto; white-space: pre-wrap; border: 1px solid #ced4da; background-color: #e9ecef;">
+              Showcase your volunteer experience prominently on LinkedIn, alongside your professional work, to demonstrate your well-roundedness and commitment to causes you care about. Leverage both the "Experience" and dedicated "Volunteering" sections to highlight relevant achievements, quantifying your impact and emphasizing transferable skills.
+              Remember, volunteer work can be just as valuable as paid experience, demonstrating initiative, passion, and leadership. Optimize this section by crafting compelling descriptions with action-oriented language and specific results. Incorporate visuals and testimonials to further strengthen your profile.
+              Select volunteer experiences that align with your target jobs and professional goals, showcasing how your volunteer work complements your career aspirations. By strategically featuring your volunteer experience, you can create a more impactful LinkedIn profile that resonates with potential employers and expands your network.
+              
+            </div>
+          </div>
+  
+          <div class="mb-5 py-5 col-12">
+            <h2 for="about" class="form-label text-center">Recommendations Regarding Licenses and Certifications:</h2>
+            <div class="form-control" name="about" id="about" disabled style="height: auto; white-space: pre-wrap; border: 1px solid #ced4da; background-color: #e9ecef;">
+              The "Licenses & Certifications" section validates your expertise and boosts your profile's credibility. List all relevant certifications, including those beyond your primary profession, to showcase your diverse skillset. Ensure accuracy and include issuing authority, dates, and (if possible) a link to the certification for verification. Consider adding a brief description highlighting the knowledge and skills acquired through each certification. Prioritize certifications most pertinent to your current career goals at the top.
+              Remember: This section demonstrates your commitment to professional development and continuous learning, so keep it updated with new achievements
+
+            </div>
+          </div>
+
+        </div>
+    </div>
+
+        </div>
+      </div>
+      {% csrf_token %}
+
+
+
+
+    </form>
+  </div>
+</div>
+
+
+<script>
+
+const copy_btns = document.querySelectorAll('.copy-btn');
+const regen_btns = document.querySelectorAll('.regen-btn');
+const url = "{% url 'regenerate' %}"
+regen_btns.forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    console.log('crsf')
+
+    const section = e.target.getAttribute('data-value');
+     const el = document.getElementById('recommended-'+section)
+     const text = el.innerText;
+    const crsf = document.querySelector("input[name='csrfmiddlewaretoken']").value
+    console.log(crsf)
+    // const url ={% url  'regenerate' % }
+    console.log(url) 
+
+
+
+    fetch(url , {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'X-CSRFToken':crsf
+      },
+      body:JSON.stringify({
+      section:section,
+      text : text
+    })
+    }
+  ).then(res => res.json())
+  .then(data=>{
+    el.innerText = ""
+    el.innerText = data['res']
+  })
+  .catch(error => console.error(error))
+      
+ 
+  });
+})
+
+
+copy_btns.forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    const elementId ="recommended-"+ e.target.getAttribute('data-value');
+    
+    copyToClipboard(elementId);
+  });
+});
+
+function copyToClipboard(element) {
+  const data = document.getElementById(element).innerText;
+
+ navigator.clipboard.writeText(data)
+
+}
+
+
+
+
+</script>
+
+
+{% endblock body %}

@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% block title %}
+  Home
+{% endblock title %}    
+
+{% block body %}
+<div class="container min-vh-100 d-flex">
+    <div class="col-12 d-flex justify-content-center align-items-center">
+        <form id="manualForm" action="{% url 'getRecommendation' %}" method="post">
+            {% csrf_token %}
+            <div>
+                <h3 class="mb-3">
+                    Could not scrape the URL. Please enter the details manually
+                </h3>
+            </div>
+            
+            <!-- Headline -->
+            <div class="mb-3" style="width: 50vw;">
+                <label for="headline" class="form-label">Current Headline</label>
+                <div>
+                    <textarea class="form-control" name="headline" id="headline" rows="1"></textarea>
+                </div>
+            </div>
+            
+            <!-- About -->
+            <div class="mb-3" style="width: 50vw;">
+                <label for="about" class="form-label">Current About</label>
+                <div>
+                    <textarea class="form-control" name="about" id="about" rows="10"></textarea>
+                </div>
+            </div>
+            
+            <!-- Work Experience -->
+            <div class="mb-3" style="width: 50vw;">
+                <label for="experience" class="form-label">Work Experience</label>
+                <div>
+                    <textarea class="form-control" name="experience" id="experience" rows="5"></textarea>
+                </div>
+            </div>
+            
+            <!-- Projects -->
+            <div class="mb-3" style="width: 50vw;">
+                <label for="projects" class="form-label">Projects</label>
+                <div>
+                    <textarea class="form-control" name="projects" id="projects" rows="5"></textarea>
+                </div>
+            </div>
+
+            <button id="submitButton" type="submit" class="btn btn-primary">Submit</button>
+            <div id="loading" class="spinner-border text-primary d-none" role="status">
+              <span class="sr-only"></span>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    const form = document.getElementById('manualForm');
+    const submitButton = document.getElementById('submitButton');
+    const loader = document.getElementById('loading');
+
+    form.addEventListener('submit', function() {
+        // Disable the submit button
+        submitButton.disabled = true;
+        submitButton.classList.add('disabled-btn');
+        loader.classList.remove('d-none'); // Show the loader
+    });
+</script>
+{% endblock body %}

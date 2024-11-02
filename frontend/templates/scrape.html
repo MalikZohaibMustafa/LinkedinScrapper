@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block title %}
+  Home
+{% endblock title %}    
+
+{% block body %}
+<style>
+  .form-control:disabled {
+    border: 1px solid black;
+  }
+</style>
+  
+<div class="container min-vh-100 d-flex my-5">
+  
+  <div class="col-12 d-flex justify-content-center align-items-center">
+    <form action="{% url 'getQuestions' %}" class="vw-100" method="post">
+      {% csrf_token %}
+      <div>
+        <h1>Your Profile</h1>
+      </div>
+      <div class="mb-5 overflow-scroll w-75">
+        <img class="img-fluid" src="{{ screenshot }}" alt="Screenshot">
+      </div>
+      <button type="submit" class="btn btn-primary fs-3" id="submit-button">Update Your Profile</button>
+    </form>
+  </div>
+</div>
+<script>
+  document.getElementById('submit-button').addEventListener('click', function(event) {
+      this.disabled = true;
+      this.form.submit();
+      event.preventDefault(); // Prevent default form submission if necessary
+  });
+</script>
+
+
+
+{% endblock body %}
